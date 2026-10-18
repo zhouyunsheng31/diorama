@@ -56,7 +56,7 @@ class EngineBlockSource(BlockSource):
         use_top_height=True,
     ):
         if api is None:
-            import mod.server.extraServerApi as api  # noqa: F401 - deferred import
+            import server.extraServerApi as api  # noqa: F401 - deferred import
         self._api = api
         self.level_id = level_id
         self.dimension_id = int(dimension_id)

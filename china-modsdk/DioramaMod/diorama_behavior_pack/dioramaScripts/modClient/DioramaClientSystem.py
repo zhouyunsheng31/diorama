@@ -21,7 +21,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import time
 
-import mod.client.extraClientApi as clientApi
+import client.extraClientApi as clientApi
 
 from dioramaScripts.modCommon import eventConfig as ev
 from dioramaScripts.modCommon import modConfig

@@ -35,7 +35,7 @@ class ClientBlockSource(BlockSource):
 
     def __init__(self, level_id, api=None, min_y=-64, max_y=320, roof=NO_ROOF, top_y=255):
         if api is None:
-            import mod.client.extraClientApi as api  # noqa: F401 - deferred import
+            import client.extraClientApi as api  # noqa: F401 - deferred import
         self._api = api
         self.level_id = level_id
         self.min_y = int(min_y)

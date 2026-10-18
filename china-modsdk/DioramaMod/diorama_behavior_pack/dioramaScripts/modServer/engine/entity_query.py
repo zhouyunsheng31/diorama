@@ -32,7 +32,7 @@ def _call(obj, name, *args):
 class EntityQuery(object):
     """Reads entity positions/types for one level.
 
-    ``api`` is ``mod.server.extraServerApi``; passing it in keeps this file
+    ``api`` is ``server.extraServerApi``; passing it in keeps this file
     importable (and therefore unit-testable) outside the engine.
     """
 

@@ -20,7 +20,7 @@ in order and falls back to ``object``.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import mod.client.extraClientApi as clientApi
+import client.extraClientApi as clientApi
 
 from dioramaScripts.modCommon import modConfig
 from dioramaScripts.modCommon.log import warn
@@ -118,25 +118,45 @@ def _as(node, method):
 
 
 def set_text(screen, path, text, uses_base_screen=True):
+    """Set text using the documented ScreenNode API, with control fallback."""
+    full = resolve(screen, path, uses_base_screen)
+    direct = getattr(screen, "SetText", None)
+    if callable(direct):
+        try:
+            direct(full, "%s" % (text,))
+            return True
+        except Exception as exc:  # noqa: BLE001
+            warn("SetText(%s) failed: %r", full, exc)
     label = as_label(screen, path, uses_base_screen)
-    if label is None:
-        return False
-    return _invoke(label, ("SetText", "SetTextString"), "%s" % (text,))
+    return False if label is None else _invoke(label, ("SetText", "SetTextString"), "%s" % (text,))
 
 
 def set_visible(screen, path, visible, uses_base_screen=True):
+    """Set visibility using ScreenNode first, then a base control."""
+    full = resolve(screen, path, uses_base_screen)
+    direct = getattr(screen, "SetVisible", None)
+    if callable(direct):
+        try:
+            direct(full, bool(visible))
+            return True
+        except Exception as exc:  # noqa: BLE001
+            warn("SetVisible(%s) failed: %r", full, exc)
     node = control(screen, path, uses_base_screen)
-    if node is None:
-        return False
-    return _invoke(node, ("SetVisible",), bool(visible))
+    return False if node is None else _invoke(node, ("SetVisible",), bool(visible))
 
 
 def set_sprite(screen, path, texture, uses_base_screen=True):
     """Point an image control at a texture in the resource pack."""
+    full = resolve(screen, path, uses_base_screen)
+    direct = getattr(screen, "SetSprite", None)
+    if callable(direct):
+        try:
+            direct(full, "%s" % (texture,))
+            return True
+        except Exception as exc:  # noqa: BLE001
+            warn("SetSprite(%s) failed: %r", full, exc)
     image = as_image(screen, path, uses_base_screen)
-    if image is None:
-        return False
-    return _invoke(image, ("SetSprite", "SetTexture"), "%s" % (texture,))
+    return False if image is None else _invoke(image, ("SetSprite", "SetTexture"), "%s" % (texture,))
 
 
 def set_alpha(screen, path, alpha, uses_base_screen=True):
@@ -154,7 +174,20 @@ def set_position(screen, path, x, y, uses_base_screen=True):
 
 
 def on_touch_up(screen, path, callback, uses_base_screen=True):
-    """Attach a touch-up handler to a button control."""
+    """Attach a touch-up handler using the documented ScreenNode callback."""
+    full = resolve(screen, path, uses_base_screen)
+    direct = getattr(screen, "AddTouchEventHandler", None)
+    if callable(direct):
+        try:
+            def _handler(args):
+                try:
+                    return callback(args)
+                except TypeError:
+                    return callback()
+            direct(full, _handler)
+            return True
+        except Exception as exc:  # noqa: BLE001
+            warn("AddTouchEventHandler(%s) failed: %r", full, exc)
     button = as_button(screen, path, uses_base_screen)
     if button is None:
         return False
@@ -165,6 +198,19 @@ def on_touch_up(screen, path, callback, uses_base_screen=True):
 
 
 def on_touch_down(screen, path, callback, uses_base_screen=True):
+    full = resolve(screen, path, uses_base_screen)
+    direct = getattr(screen, "AddTouchEventHandler", None)
+    if callable(direct):
+        try:
+            def _handler(args):
+                try:
+                    return callback(args)
+                except TypeError:
+                    return callback()
+            direct(full, _handler)
+            return True
+        except Exception as exc:  # noqa: BLE001
+            warn("AddTouchEventHandler(%s) failed: %r", full, exc)
     button = as_button(screen, path, uses_base_screen)
     if button is None:
         return False

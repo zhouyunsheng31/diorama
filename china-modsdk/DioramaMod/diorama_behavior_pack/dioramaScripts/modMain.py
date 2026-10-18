@@ -12,15 +12,13 @@ file stays readable and the module layout matches the documented pattern::
     <behaviour pack>/dioramaScripts/modMain.py
 
 Note for the PC workbench: importing this module outside the game fails, because
-``mod.common.mod`` only exists in the engine. ``tools/validate.py`` therefore
+``common.mod`` only exists in the engine. ``tools/validate.py`` therefore
 compiles it without importing it.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-from mod.common.mod import Mod
-import mod.client.extraClientApi as clientApi
-import mod.server.extraServerApi as serverApi
+from common.mod import Mod
 
 from dioramaScripts.modCommon import modConfig
 from dioramaScripts.modCommon.log import error, info
@@ -37,6 +35,7 @@ class DioramaMod(object):
 
     @Mod.InitServer()
     def DioramaServerInit(self):
+        import server.extraServerApi as serverApi
         info("registering server system %s", modConfig.SERVER_SYSTEM_NAME)
         try:
             serverApi.RegisterSystem(
@@ -55,6 +54,7 @@ class DioramaMod(object):
 
     @Mod.InitClient()
     def DioramaClientInit(self):
+        import client.extraClientApi as clientApi
         info("registering client system %s", modConfig.CLIENT_SYSTEM_NAME)
         try:
             clientApi.RegisterSystem(

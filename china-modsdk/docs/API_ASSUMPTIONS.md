@@ -13,7 +13,7 @@ the only source, and where sources disagree (for example on whether
 
 | Symbol | Assumed behaviour | Where | Guard | If wrong |
 |---|---|---|---|---|
-| `mod.common.mod.Mod` | `@Mod.Binding(name, version)`, `@Mod.InitServer/DestroyServer/InitClient/DestroyClient` decorators exist | `modMain.py` | none — this is the documented entry point | Nothing loads; the ModSDK install is wrong, not the scaffold |
+| `common.mod.Mod` | `@Mod.Binding(name, version)`, `@Mod.InitServer/DestroyServer/InitClient/DestroyClient` decorators exist | `modMain.py` | none — this is the documented entry point | Nothing loads; the ModSDK install is wrong, not the scaffold |
 | `serverApi.RegisterSystem(ns, name, path)` | Third argument is a **string** `"pkg.module.Class"` | `modMain.py` | `try/except` + log | Pass the class object instead: change `modCommon/modConfig.py` constants |
 | `clientApi.RegisterSystem(ns, name, path)` | Same | `modMain.py` | `try/except` + log | Same |
 | `ServerSystem.__init__(namespace, systemName)` | Base class written as `ServerSystem.__init__(self, ns, name)` (Python 2 style) | both systems | — | If your build only supports `super()`, that also works; the class is fetched at import time |
