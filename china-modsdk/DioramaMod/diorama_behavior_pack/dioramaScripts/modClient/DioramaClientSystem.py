@@ -35,6 +35,7 @@ from dioramaScripts.modClient.components.MapClientComponent import MapClientComp
 from dioramaScripts.modClient.components.RadarClientComponent import RadarClientComponent
 from dioramaScripts.modClient.components.SettingsClientComponent import SettingsClientComponent
 from dioramaScripts.modClient.components.WaypointClientComponent import WaypointClientComponent
+from dioramaScripts.modClient.components.WorldDioramaComponent import WorldDioramaComponent
 from dioramaScripts.modClient.engine.client_blocks import ClientBlockSource, ClientPlayer
 from dioramaScripts.modClient.engine.config_backend import make_backend
 
@@ -69,6 +70,7 @@ class DioramaClientSystem(ClientSystem):
         self.radar = RadarClientComponent(self)
         self.map = MapClientComponent(self)
         self.hud = HudClientComponent(self)
+        self.world_diorama = WorldDioramaComponent(self)
 
         self._register_ui()
         self._listen_engine()

@@ -27,6 +27,7 @@ from dioramaScripts.modCore.tile_key import TileKey
 from dioramaScripts.modServer.components.MapServerComponent import MapServerComponent
 from dioramaScripts.modServer.components.RadarServerComponent import RadarServerComponent
 from dioramaScripts.modServer.components.WaypointServerComponent import WaypointServerComponent
+from dioramaScripts.modServer.components.MicroBlockComponent import MicroBlockComponent
 
 ServerSystem = serverApi.GetServerSystemCls()
 
@@ -56,6 +57,7 @@ class DioramaServerSystem(ServerSystem):
         self.radar = RadarServerComponent(self, modConfig.RADAR_INTERVAL)
         self.waypoints = WaypointServerComponent(self)
         self.map = MapServerComponent(self)
+        self.micro_blocks = MicroBlockComponent(self)
         self._listen_engine()
         self._listen_client()
         self._start_timer()
