@@ -32,6 +32,41 @@ python3 tools/package_upload.py --out dist
 
 ---
 
+## 1.5 上架图片（美术素材）是什么
+
+上传表单要求的是**商店展示图**，和 mod 内容无关——游戏运行时不读这些图：
+
+| 图片 | 用途 | 官方要求 |
+|---|---|---|
+| icon | 资源中心列表里的小图 | 右下角会被评分角标遮挡，别把重点放右下 |
+| banner | 核心展示图 | 突出玩法主题 |
+| POS 图 | 购买/详情页 | 免费组件也要传 |
+| 轮播图 | 组件页内 banner | 建议 3 张，不要三张一样 |
+| 视频封面 | 详情页第一张图 | 免费组件可免视频 |
+| 介绍长图 | 详情页长图 | **宽度 ≤1000px**，建议 720–1000px，单图 ≤2MB，jpg |
+
+原版 Java Diorama **没有**这些图——它只是 GitHub 上的代码仓库，从没上架过网易平台。
+
+但我们不需要手绘：本工程和原版用的是同一套 baker，可以直接渲染真实 Diorama 输出当截图：
+
+```bash
+python3 tools/gen_store_art.py --out dist/store
+```
+
+产物：
+
+```
+dist/store/01_icon_512.png          图标（含底部标题条，避开评分角标）
+dist/store/02_banner_1280x720.png   横幅
+dist/store/03_pos_1280x720.png       POS 图
+dist/store/04_carousel_1..3.png      三张轮播图（不同倍率裁切）
+dist/store/07_long_1000.png          介绍长图（宽 1000，可再压成 jpg）
+```
+
+这些图的底图是**真实跑出来的体素地图**，不是画上去的示意图。上传表单会显示每个位置的具体像素尺寸，按需用任意看图软件裁一下即可。
+
+依赖：`pip install pillow`，以及一个中文字体（本机用 `fonts-noto-cjk`）。
+
 ## 二、手机上上传并自测
 
 1. 手机浏览器打开 <https://mcdev.webapp.163.com/#/login>，用开发者账号登录。
