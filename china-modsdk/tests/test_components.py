@@ -181,6 +181,29 @@ class MapServerComponentTest(unittest.TestCase):
         self.assertEqual(self.map.stats()["sources"], 1)
         self.assertIsNotNone(self.map._sources[0])
 
+    # -- official block geometry snapshots ------------------------------
+
+    def test_geometry_request_refuses_an_oversized_volume(self):
+        result = self.map.on_geometry_request(
+            {"playerId": "p1", "start": [0, 0, 0], "end": [128, 0, 0]}
+        )
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "geometry_edge_limit")
+        self.assertEqual(self.server.events("diorama:geometry_palette")[0]["ok"], False)
+
+    def test_geometry_request_ignores_malformed_arguments(self):
+        self.assertIsNone(self.map.on_geometry_request({"playerId": "p1"}))
+        self.assertIsNone(self.map.on_geometry_request({"playerId": "p1", "start": [0, 0], "end": [1, 1, 1]}))
+        self.assertEqual(self.server.events("diorama:geometry_palette"), [])
+
+    def test_geometry_request_reports_a_missing_engine_api(self):
+        """The fake factory has no CreateBlock, so this must not raise."""
+        result = self.map.on_geometry_request(
+            {"playerId": "p1", "start": [0, 0, 0], "end": [4, 4, 4]}
+        )
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["reason"], "geometry_unavailable")
+
 
 class FakeQuery(object):
     """Stands in for ``EntityQuery``, which would call the engine."""
@@ -335,6 +358,7 @@ class WaypointClientComponentTest(unittest.TestCase):
         second = WaypointClientComponent(self.client, backend)
         self.assertEqual([w.name for w in second.all()], ["Base"])
 
+
     def test_death_markers_are_capped(self):
         for _ in range(5):
             self.waypoints.on_player_died()
@@ -444,3 +468,40 @@ class SettingsClientComponentTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipUnless(AVAILABLE, "packages not importable")
+class MapGeometryClientTest(unittest.TestCase):
+    """The optional PaperDoll geometry path must fail soft without the engine."""
+
+    def setUp(self):
+        from dioramaScripts.modClient.components.MapClientComponent import (
+            MapClientComponent,
+        )
+
+        self.client = FakeClient()
+        self.client._geometry_on = False
+        self.client._map_screen = None
+        self.client.world_diorama = None
+        self.map = MapClientComponent(self.client)
+
+    def test_request_geometry_sends_integer_corners(self):
+        self.map.request_geometry((1, 2, 3), (5, 6, 7))
+        name, payload = self.client.sent[-1]
+        self.assertEqual(name, "diorama:geometry_request")
+        self.assertEqual(payload["start"], [1, 2, 3])
+        self.assertEqual(payload["end"], [5, 6, 7])
+
+    def test_a_failed_palette_clears_the_geometry_flag(self):
+        self.client._geometry_on = True
+        self.assertFalse(
+            self.map.on_geometry_palette({"ok": False, "reason": "geometry_edge_limit"})
+        )
+        self.assertFalse(self.client._geometry_on)
+        self.assertEqual(self.map.last_geometry_error, "geometry_edge_limit")
+
+    def test_a_palette_without_a_screen_still_clears_the_flag(self):
+        self.client._geometry_on = True
+        self.assertFalse(self.map.on_geometry_palette({"ok": True, "palette": {"a": 1}}))
+        self.assertFalse(self.client._geometry_on)
+        self.assertIsNotNone(self.map.last_geometry_palette)

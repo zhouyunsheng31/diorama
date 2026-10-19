@@ -86,6 +86,7 @@ class DioramaServerSystem(ServerSystem):
         client = modConfig.CLIENT_SYSTEM_NAME
         pairs = (
             (ev.EV_TILE_REQUEST, self.map.on_tile_request),
+            (ev.EV_GEOMETRY_REQUEST, self.map.on_geometry_request),
             (ev.EV_PICK_REQUEST, self.map.on_pick_request),
             (ev.EV_SHARE_WAYPOINT, self.waypoints.on_share),
             (ev.EV_SYNC_WAYPOINTS, self.waypoints.on_sync),

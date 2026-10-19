@@ -87,16 +87,25 @@ class WorldDioramaComponent(object):
     def render_block_geometry(self, screen, control_path, palette, geometry_name="diorama_map"):
         """Render a palette inside a PaperDoll control when supported.
 
-        ``palette`` is the serialized/deserialized BlockPalette object returned by
-        the official API. The JSON atlas screen remains the fallback.
+        ``palette`` may be either a live BlockPalette object or the plain dict
+        that ``SerializeBlockPalette`` produced on the server; the dict is
+        deserialized here because the serialized form is what crosses the
+        client/server event boundary. ``geometry_name`` is reused on purpose:
+        the docs say reusing a name for an identical model saves model memory.
+        The JSON atlas screen remains the fallback.
         """
         if screen is None or palette is None:
             return False
         try:
-            block = self._factory_component("CreateBlockGeometry")
-            if block is None:
+            geometry_api = self._factory_component("CreateBlockGeometry")
+            if geometry_api is None:
                 return False
-            geometry = block.CombineBlockPaletteToGeometry(palette, geometry_name, 0)
+            live = palette
+            if isinstance(palette, dict):
+                live = geometry_api.DeserializeBlockPalette(palette)
+                if live is None:
+                    return False
+            geometry = geometry_api.CombineBlockPaletteToGeometry(live, geometry_name, 0)
             if not geometry:
                 return False
             control = screen.GetBaseUIControl(control_path)

@@ -40,6 +40,10 @@ E_SCRIPT_TICK_CLIENT = "OnScriptTickClient"
 EV_RADAR = "diorama:radar"
 #: A baked tile or a refusal: {"key": [...], "png": "<base64>", ...}
 EV_TILE = "diorama:tile"
+#: A serialized official BlockPalette for the optional full-screen geometry view.
+EV_GEOMETRY_PALETTE = "diorama:geometry_palette"
+#: Request a bounded BlockPalette snapshot: {"start": [x,y,z], "end": [x,y,z]}.
+EV_GEOMETRY_REQUEST = "diorama:geometry_request"
 #: The shared waypoint list: {"waypoints": [...]}
 EV_WAYPOINTS = "diorama:waypoints"
 #: Player settings echo: {"settings": {...}}

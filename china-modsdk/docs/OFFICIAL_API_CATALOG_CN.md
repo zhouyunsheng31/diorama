@@ -63,14 +63,35 @@
 
 | 官方能力 | 工程位置 | 当前状态 |
 |---|---|---|
-| 投影/DDA/光照/LOD/MipMap | `DioramaMod/.../modCore/` | 已有，离线测试 |
-| HUD grid | `diorama_resource_pack/ui/` | 已有模板，需 ViewBinder 真机适配 |
+| 投影/DDA/光照/LOD/MipMap | `DioramaMod/.../modCore/` | 已有，350 项离线测试 |
+| HUD 地图格 | `diorama_resource_pack/ui/diorama_hud.json` | `stack_grid` + 官方 `ViewBinder` 绑定坐标/方位/群系 |
+| HUD 文字绑定 | `modClient/ui/DioramaHudScreen.py` | `BF_BindString` 装饰器，控件缺失时仍走 `SetText` 回退 |
 | 服务端方块采样 | `modServer/engine/block_source.py` | 已有适配边界 |
-| 微缩方块快照 | 待接入 | 下一阶段重点 |
-| VirtualWorld 全屏地图 | 待接入 | 下一阶段重点 |
+| 全屏块几何 | `modServer/components/MapServerComponent.py` + `modClient/components/WorldDioramaComponent.py` | `GetBlockPaletteBetweenPos` → `SerializeBlockPalette` → 事件 → `DeserializeBlockPalette` → `CombineBlockPaletteToGeometry` → PaperDoll |
+| 微缩方块快照 | `modServer/components/MicroBlockComponent.py` | 有 64 格上限与失败回退 |
+| VirtualWorld 全屏地图 | `modClient/components/WorldDioramaComponent.py` | 单例虚拟世界、相机、原版模型与包围盒适配 |
 | DrawingComp 雷达/路径点 | 部分组件已有 | 需真实客户端验证 |
-| ShaderSDK | 未接入 | 后处理验证后再接 |
+| ShaderSDK | 未接入 | 需 PC/Java 版目标；手机默认 OpenGL，不作为移动端方案 |
+
+### 全屏 3D 地图的数据流
+
+```
+客户端点按 “3D” 按钮
+  → EV_GEOMETRY_REQUEST {start, end}          （任意一边 >64 格直接拒绝）
+  → 服务端 CreateBlock(levelId).GetBlockPaletteBetweenPos
+  → SerializeBlockPalette()
+  → EV_GEOMETRY_PALETTE {palette}
+  → 客户端 CreateBlockGeometry(levelId).DeserializeBlockPalette()
+  → CombineBlockPaletteToGeometry(..., "diorama_map", 0)
+  → PaperDollUIControl.RenderBlockGeometryModel
+  → 隐藏 atlas 图层；任何一步失败都回退到 atlas
+```
+
+官方文档明确说明：`RenderBlockGeometryModel` **每次进入游戏都需要重新调用**，所以这一层不做持久化假设。
 
 ## 关键限制
 
 官方 API 能把实现推进到“HUD 地图 + 全屏立体快照/虚拟世界”的高相似度，但没有文档证明可以把独立 3D 场景实时渲染到 HUD 小窗纹理。因此不把这个缺口描述成已解决。
+
+客户端几何层的已知边界：`CombineBlockPaletteToGeometry` 目前**不支持**自定义方块实体外观、微缩方块、火、水、花盆、钟、末地传送门、末地折跃门、屏障、潮涌核心和旗帜；这些方块在几何体里会被跳过（`unsupportedMode=0`）。
+

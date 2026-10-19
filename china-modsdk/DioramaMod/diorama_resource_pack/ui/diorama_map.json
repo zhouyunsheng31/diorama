@@ -87,7 +87,8 @@
             { "recenter_button@diorama.diorama_button": { "size": [70, 22], "offset": [100, 0], "controls": [{ "label@diorama.button_label": { "text": "\u5b9a\u4f4d" } }] } },
             { "waypoint_button@diorama.diorama_button": { "size": [70, 22], "offset": [176, 0], "controls": [{ "label@diorama.button_label": { "text": "\u8def\u5f84\u70b9" } }] } },
             { "settings_button@diorama.diorama_button": { "size": [70, 22], "offset": [252, 0], "controls": [{ "label@diorama.button_label": { "text": "\u8bbe\u7f6e" } }] } },
-            { "close_button@diorama.diorama_button": { "size": [56, 22], "offset": [328, 0], "controls": [{ "label@diorama.button_label": { "text": "\u5173\u95ed" } }] } }
+            { "geometry_button@diorama.diorama_button": { "size": [56, 22], "offset": [328, 0], "controls": [{ "label@diorama.button_label": { "text": "3D" } }] } },
+            { "close_button@diorama.diorama_button": { "size": [56, 22], "offset": [390, 0], "controls": [{ "label@diorama.button_label": { "text": "\u5173\u95ed" } }] } }
           ]
         }
       }

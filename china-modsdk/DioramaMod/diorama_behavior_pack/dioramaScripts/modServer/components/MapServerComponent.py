@@ -140,6 +140,45 @@ class MapServerComponent(object):
             self.server.notify(player_id, ev.EV_PICK_RESULT, payload)
         return payload
 
+    # -- official block geometry snapshots ----------------------------
+
+    def on_geometry_request(self, args):
+        """Send a bounded serialized BlockPalette for PaperDoll rendering."""
+        player_id = self._sender_id(args)
+        raw_start = (args or {}).get("start")
+        raw_end = (args or {}).get("end")
+        if not (isinstance(raw_start, (list, tuple)) and isinstance(raw_end, (list, tuple))):
+            return None
+        if len(raw_start) != 3 or len(raw_end) != 3:
+            return None
+        try:
+            start = tuple(int(v) for v in raw_start)
+            end = tuple(int(v) for v in raw_end)
+        except (TypeError, ValueError):
+            return None
+        if any(abs(end[i] - start[i]) + 1 > 64 for i in range(3)):
+            payload = {"ok": False, "reason": "geometry_edge_limit"}
+            if player_id:
+                self.server.notify(player_id, ev.EV_GEOMETRY_PALETTE, payload)
+            return payload
+        dimension_id = self._dimension_for(player_id)
+        try:
+            block = self.server.api.GetEngineCompFactory().CreateBlock(self.server.level_id)
+            try:
+                palette = block.GetBlockPaletteBetweenPos(dimension_id, start, end, True)
+            except TypeError:
+                palette = block.GetBlockPaletteBetweenPos(dimension_id, start, end)
+            if palette is None:
+                raise RuntimeError("empty_palette")
+            serializer = getattr(palette, "SerializeBlockPalette", None)
+            data = serializer() if callable(serializer) else palette
+            payload = {"ok": True, "start": list(start), "end": list(end), "palette": data}
+        except Exception as exc:
+            payload = {"ok": False, "reason": "geometry_unavailable", "error": str(exc)}
+        if player_id:
+            self.server.notify(player_id, ev.EV_GEOMETRY_PALETTE, payload)
+        return payload
+
     # -- tiles ---------------------------------------------------------
 
     def on_tile_request(self, args):

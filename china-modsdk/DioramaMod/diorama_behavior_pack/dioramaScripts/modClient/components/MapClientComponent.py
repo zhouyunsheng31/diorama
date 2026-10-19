@@ -74,6 +74,8 @@ class MapClientComponent(object):
         self.cache = TileCache()
         self.pending = {}
         self.last_pick = None
+        self.last_geometry_palette = None
+        self.last_geometry_error = None
         self._last_request = 0.0
         self._refusals = 0
 
@@ -99,6 +101,32 @@ class MapClientComponent(object):
         self.client.notify_server(
             ev.EV_PICK_REQUEST, {"u": float(u), "v": float(v), "layer": int(layer)}
         )
+
+    def request_geometry(self, start, end):
+        """Ask the server for a bounded serialized BlockPalette."""
+        self.client.notify_server(
+            ev.EV_GEOMETRY_REQUEST,
+            {"start": [int(v) for v in start], "end": [int(v) for v in end]},
+        )
+
+    def on_geometry_palette(self, args):
+        """``EV_GEOMETRY_PALETTE``: feed the optional PaperDoll geometry layer."""
+        payload = args or {}
+        if not payload.get("ok"):
+            self.last_geometry_error = payload.get("reason", "unknown")
+            self.client._geometry_on = False
+            return False
+        self.last_geometry_palette = payload.get("palette")
+        screen = getattr(self.client, "_map_screen", None)
+        world = getattr(self.client, "world_diorama", None)
+        if screen is None or world is None or self.last_geometry_palette is None:
+            self.client._geometry_on = False
+            return False
+        ok = bool(screen.render_geometry(world, self.last_geometry_palette))
+        if not ok:
+            self.client._geometry_on = False
+            self.last_geometry_error = "render_failed"
+        return ok
 
     def on_tile(self, args):
         """``EV_TILE`` from the server: a tile, or a refusal with a reason."""
@@ -156,4 +184,5 @@ class MapClientComponent(object):
             "pending": len(self.pending),
             "refusals": self._refusals,
             "last_pick": self.last_pick,
+            "geometry_error": self.last_geometry_error,
         }

@@ -60,6 +60,7 @@ class DioramaClientSystem(ClientSystem):
         self._timer = None
         self._last_tick = 0.0
         self._tick_count = 0
+        self._geometry_on = False
 
         self.settings = SettingsClientComponent(
             self, make_backend(clientApi, self.local_player_id, modConfig.SETTINGS_CONFIG_KEY)
@@ -156,6 +157,7 @@ class DioramaClientSystem(ClientSystem):
         pairs = (
             (ev.EV_RADAR, self.radar.on_update),
             (ev.EV_TILE, self.map.on_tile),
+            (ev.EV_GEOMETRY_PALETTE, self.map.on_geometry_palette),
             (ev.EV_PICK_RESULT, self.map.on_pick),
             (ev.EV_WAYPOINTS, self.waypoints.on_shared),
             (ev.EV_SETTINGS, self.settings.on_request),
@@ -297,6 +299,7 @@ class DioramaClientSystem(ClientSystem):
                 "/button_row/recenter_button": self.recenter_map,
                 "/button_row/waypoint_button": self.open_waypoints,
                 "/button_row/settings_button": self.open_settings,
+                "/button_row/geometry_button": self.toggle_geometry_diorama,
                 "/button_row/close_button": self.close_top,
             }
         )
@@ -313,6 +316,27 @@ class DioramaClientSystem(ClientSystem):
             return
         projection = self.projection()
         self._map_screen.set_view(pos[0], projection.v(pos[1], pos[2]), self.settings.zoom())
+
+    def toggle_geometry_diorama(self):
+        """Toggle the optional official PaperDoll block-geometry view."""
+        screen = self._map_screen
+        pos = self.player_position()
+        if screen is None or pos is None:
+            return False
+        if self._geometry_on:
+            self._geometry_on = False
+            screen.set_geometry_visible(False)
+            screen.set_atlas_visible(self.settings.settings.show_atlas)
+            self.hud.notice("\u5df2\u5207\u56de\u8d34\u56fe\u5730\u56fe")
+            return True
+        half = 16
+        self.map.request_geometry(
+            (pos[0] - half, pos[1] - 8, pos[2] - half),
+            (pos[0] + half, pos[1] + 8, pos[2] + half),
+        )
+        self._geometry_on = True
+        self.hud.notice("\u6b63\u5728\u751f\u6210 3D \u7acb\u4f53\u5730\u56fe\u2026")
+        return True
 
     def on_map_tap(self, u, v):
         pos = self.map.local_standing_spot(u, v)
