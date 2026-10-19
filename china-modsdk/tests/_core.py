@@ -25,6 +25,7 @@ def _default_scripts_dir():
             HERE,
             os.pardir,
             "DioramaMod",
+            "behavior_packs",
             "diorama_behavior_pack",
             "dioramaScripts",
         )

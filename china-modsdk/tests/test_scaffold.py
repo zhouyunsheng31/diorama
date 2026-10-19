@@ -20,8 +20,8 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, os.pardir))
 MOD_ROOT = os.path.join(ROOT, "DioramaMod")
-BP = os.path.join(MOD_ROOT, "diorama_behavior_pack")
-RP = os.path.join(MOD_ROOT, "diorama_resource_pack")
+BP = os.path.join(MOD_ROOT, "behavior_packs", "diorama_behavior_pack")
+RP = os.path.join(MOD_ROOT, "resource_packs", "diorama_resource_pack")
 SCRIPTS = os.path.join(BP, "dioramaScripts")
 UI_DIR = os.path.join(RP, "ui")
 VALIDATOR = os.path.join(ROOT, "tools", "validate.py")
@@ -53,6 +53,13 @@ class ManifestTests(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(SCRIPTS, "modMain.py")))
         self.assertTrue(os.path.isdir(UI_DIR))
         self.assertTrue(os.path.isdir(os.path.join(RP, "texts")))
+
+    def test_layout_matches_the_official_modsdk_project(self):
+        """MCStudio looks for behavior_packs/ and resource_packs/ by name."""
+        self.assertTrue(os.path.isdir(os.path.join(MOD_ROOT, "behavior_packs")))
+        self.assertTrue(os.path.isdir(os.path.join(MOD_ROOT, "resource_packs")))
+        self.assertFalse(os.path.isdir(os.path.join(MOD_ROOT, "diorama_behavior_pack")))
+        self.assertFalse(os.path.isdir(os.path.join(MOD_ROOT, "diorama_resource_pack")))
 
     def test_header_shape_and_versions(self):
         for kind, manifest in self.manifests().items():

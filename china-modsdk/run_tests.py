@@ -26,7 +26,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 TESTS_DIR = os.path.join(HERE, "tests")
 DEFAULT_SCRIPTS = os.path.normpath(
-    os.path.join(HERE, "DioramaMod", "diorama_behavior_pack", "dioramaScripts")
+    os.path.join(HERE, "DioramaMod", "behavior_packs", "diorama_behavior_pack", "dioramaScripts")
 )
 
 DEFAULT_CORE = os.environ.get("DIORAMA_CORE_MODULE", "modCore")

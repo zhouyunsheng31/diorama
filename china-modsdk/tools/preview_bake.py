@@ -24,7 +24,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(
-    HERE, os.pardir, "DioramaMod", "diorama_behavior_pack", "dioramaScripts"
+    HERE, os.pardir, "DioramaMod", "behavior_packs", "diorama_behavior_pack", "dioramaScripts"
 )
 if SCRIPTS not in sys.path:
     sys.path.insert(0, SCRIPTS)

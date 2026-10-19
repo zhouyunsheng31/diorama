@@ -8,10 +8,10 @@
 ## 当前内容
 
 - `diorama_core/`：标准库纯 Python 核心与 101 个离线测试，包含斜角投影、DDA 体素采样、LOD、MipMap、路径点与雷达几何。
-- `DioramaMod/diorama_behavior_pack/dioramaScripts/modCore/`：可放入 ModSDK 行为包的核心移植，包含 baker、palette、block source、mipmaps、pick、waypoint store 等。
+- `DioramaMod/behavior_packs/diorama_behavior_pack/dioramaScripts/modCore/`：可放入 ModSDK 行为包的核心移植，包含 baker、palette、block source、mipmaps、pick、waypoint store 等。
 - `modClient/DioramaClientSystem.py`：客户端系统与 UI 适配；UiInitFinished 后创建 HUD，接收服务端 tile payload。
 - `modServer/DioramaServerSystem.py`：服务端系统与采样/通知适配；具体 SDK 事件名集中在此处替换。
-- `diorama_resource_pack/ui/diorama_hud.json`：16×16 collection binding 的 HUD 网格原型。
+- `resource_packs/diorama_resource_pack/ui/diorama_hud.json`：16×16 collection binding 的 HUD 网格原型。
 
 ## 测试
 
@@ -26,8 +26,8 @@ PYTHONPATH=. python3 -m unittest discover -s tests -v
 ## 导入开发工作台
 
 1. 在中国版开发工作台创建 ModSDK 项目并选择 Python 客户端+服务端模板。
-2. 将 `DioramaMod/diorama_behavior_pack/dioramaScripts/` 合并到工作台生成的脚本目录。
-3. 将 `DioramaMod/diorama_resource_pack/ui/` 和 `textures/` 合并到资源包。
+2. 将 `DioramaMod/behavior_packs/diorama_behavior_pack/dioramaScripts/` 合并到工作台生成的脚本目录。
+3. 将 `DioramaMod/resource_packs/diorama_resource_pack/ui/` 和 `textures/` 合并到资源包。
 4. 按本机 ModSDK 版本补齐 `RegisterSystem`、`ListenForEvent`、`RegisterUI`、`CreateUI` 和 `NotifyToClient` 的准确签名。
 5. 在 `UiInitFinished` 后创建 HUD；服务端只发送经过 LOD/限流的 tile payload。
 
@@ -50,8 +50,8 @@ PYTHONPATH=. python3 -m unittest discover -s tests -v
 
 ### 目录清单
 
-- **清单文件**：`diorama_behavior_pack/manifest.json`（data 模块）与
-  `diorama_resource_pack/manifest.json`（resources 模块），UUID 全局唯一，资源包通过
+- **清单文件**：`behavior_packs/diorama_behavior_pack/manifest.json`（data 模块）与
+  `resource_packs/diorama_resource_pack/manifest.json`（resources 模块），UUID 全局唯一，资源包通过
   `dependencies` 引用行为包。
 - **客户端系统**：`dioramaScripts/modClient/DioramaClientSystem.py` 注册 4 个界面
   （HUD / 全屏地图 / 路径点 / 设置），并拆分为 `modClient/components/` 下的
@@ -59,7 +59,7 @@ PYTHONPATH=. python3 -m unittest discover -s tests -v
 - **服务端系统**：`modServer/DioramaServerSystem.py` + `MapServerComponent`、
   `RadarServerComponent`、`WaypointServerComponent`，引擎调用集中在
   `modServer/engine/`。
-- **UI 模板**：`diorama_resource_pack/ui/` 下的 `_ui_defs.json`、`diorama_common.json`、
+- **UI 模板**：`resource_packs/diorama_resource_pack/ui/` 下的 `_ui_defs.json`、`diorama_common.json`、
   `diorama_hud.json`、`diorama_map.json`、`diorama_waypoints.json`、
   `diorama_settings.json`、`diorama_label.json`。每个界面使用
   `main@common.base_screen` + `$screen_content`，路径与 Python 侧的

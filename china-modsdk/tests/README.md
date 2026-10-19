@@ -2,7 +2,7 @@
 
 A pure-Python, standard-library-only test-suite and runner for `modCore`, the
 dependency-free Diorama maths package at
-`DioramaMod/diorama_behavior_pack/dioramaScripts/modCore`. It runs on a plain PC
+`DioramaMod/behavior_packs/diorama_behavior_pack/dioramaScripts/modCore`. It runs on a plain PC
 CPython with no game, no NetEase ModSDK and no third-party packages.
 
 The suite is written against an interface, not against the files: point

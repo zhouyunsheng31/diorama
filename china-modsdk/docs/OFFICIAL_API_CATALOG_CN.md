@@ -64,7 +64,7 @@
 | 官方能力 | 工程位置 | 当前状态 |
 |---|---|---|
 | 投影/DDA/光照/LOD/MipMap | `DioramaMod/.../modCore/` | 已有，350 项离线测试 |
-| HUD 地图格 | `diorama_resource_pack/ui/diorama_hud.json` | `stack_grid` + 官方 `ViewBinder` 绑定坐标/方位/群系 |
+| HUD 地图格 | `resource_packs/diorama_resource_pack/ui/diorama_hud.json` | `stack_grid` + 官方 `ViewBinder` 绑定坐标/方位/群系 |
 | HUD 文字绑定 | `modClient/ui/DioramaHudScreen.py` | `BF_BindString` 装饰器，控件缺失时仍走 `SetText` 回退 |
 | 服务端方块采样 | `modServer/engine/block_source.py` | 已有适配边界 |
 | 全屏块几何 | `modServer/components/MapServerComponent.py` + `modClient/components/WorldDioramaComponent.py` | `GetBlockPaletteBetweenPos` → `SerializeBlockPalette` → 事件 → `DeserializeBlockPalette` → `CombineBlockPaletteToGeometry` → PaperDoll |

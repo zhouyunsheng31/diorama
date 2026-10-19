@@ -18,7 +18,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 PACK_ROOT = os.path.normpath(
     os.path.join(
-        HERE, os.pardir, "DioramaMod", "diorama_behavior_pack"
+        HERE, os.pardir, "DioramaMod", "behavior_packs", "diorama_behavior_pack"
     )
 )
 if PACK_ROOT not in sys.path:

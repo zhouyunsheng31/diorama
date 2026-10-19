@@ -22,7 +22,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(
-    HERE, os.pardir, "DioramaMod", "diorama_behavior_pack", "dioramaScripts"
+    HERE, os.pardir, "DioramaMod", "behavior_packs", "diorama_behavior_pack", "dioramaScripts"
 )
 if SCRIPTS not in sys.path:
     sys.path.insert(0, SCRIPTS)
@@ -34,7 +34,7 @@ from modCore.projection import Projection  # noqa: E402
 FAST_SAMPLES = ((0.5, 0.5),)
 
 RP = os.path.join(
-    HERE, os.pardir, "DioramaMod", "diorama_resource_pack", "textures", "ui", "diorama_atlas.png"
+    HERE, os.pardir, "DioramaMod", "resource_packs", "diorama_resource_pack", "textures", "ui", "diorama_atlas.png"
 )
 
 

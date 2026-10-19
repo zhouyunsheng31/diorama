@@ -8,7 +8,7 @@
 
 1. 在 Windows 上安装 MCStudio，并登录已审核的开发者账号。
 2. 导入本目录 `DioramaMod/`，或将本目录作为 ModSDK 工程内容合并到工作台新建项目。
-3. 在 MCStudio 中检查 `diorama_behavior_pack/dioramaScripts/` 和资源包是否被识别。
+3. 在 MCStudio 中检查 `behavior_packs/diorama_behavior_pack/dioramaScripts/` 和资源包是否被识别。
 4. 使用「工具箱 → 手机测试版启动器」安装中国版手机测试客户端。
 5. 将工程发布为基岩版组件，选择「机审自测」或「免机审自测」。
 6. 在手机测试客户端用同一开发者账号登录，在资源中心下载自己的自测组件。

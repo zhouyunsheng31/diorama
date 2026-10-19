@@ -21,14 +21,14 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MOD_ROOT = os.path.join(HERE, os.pardir, "DioramaMod")
-SCRIPTS = os.path.join(MOD_ROOT, "diorama_behavior_pack", "dioramaScripts")
+SCRIPTS = os.path.join(MOD_ROOT, "behavior_packs", "diorama_behavior_pack", "dioramaScripts")
 if SCRIPTS not in sys.path:
     sys.path.insert(0, SCRIPTS)
 
 from modCore import png  # noqa: E402
 
-RP = os.path.join(MOD_ROOT, "diorama_resource_pack")
-BP = os.path.join(MOD_ROOT, "diorama_behavior_pack")
+RP = os.path.join(MOD_ROOT, "resource_packs", "diorama_resource_pack")
+BP = os.path.join(MOD_ROOT, "behavior_packs", "diorama_behavior_pack")
 
 
 def _clamp(value):

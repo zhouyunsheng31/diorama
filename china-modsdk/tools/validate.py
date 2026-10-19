@@ -41,8 +41,8 @@ import py_compile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, os.pardir))
 MOD_ROOT = os.path.join(ROOT, "DioramaMod")
-BP = os.path.join(MOD_ROOT, "diorama_behavior_pack")
-RP = os.path.join(MOD_ROOT, "diorama_resource_pack")
+BP = os.path.join(MOD_ROOT, "behavior_packs", "diorama_behavior_pack")
+RP = os.path.join(MOD_ROOT, "resource_packs", "diorama_resource_pack")
 SCRIPTS = os.path.join(BP, "dioramaScripts")
 
 UUID_RE = re.compile(
