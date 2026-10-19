@@ -1,0 +1,41 @@
+{
+  "namespace": "diorama",
+
+  "main@common.base_screen": {
+    "$screen_content": "diorama.minimap_root",
+    "is_hud": true,
+    "absorbs_input": false,
+    "force_render_below": false,
+    "render_game_behind": true,
+    "should_steal_mouse": false
+  },
+
+  "minimap_root": {
+    "type": "panel",
+    "size": ["100%", "100%"],
+    "controls": [
+      { "minimap_anchor": {
+          "type": "panel",
+          "size": [128, 128],
+          "anchor_from": "top_right",
+          "anchor_to": "top_right",
+          "offset": [-8, 8],
+          "controls": [
+            { "inheritor1@mini_map.mini_map_wrapper": {
+                "size": ["100%", "100%"]
+              }
+            }
+          ]
+        }
+      },
+      { "minimap_off_label@diorama.text_dim": {
+          "anchor_from": "top_right",
+          "anchor_to": "top_right",
+          "offset": [-12, 12],
+          "text": "\u5c0f\u5730\u56fe\u4e0d\u53ef\u7528",
+          "visible": false
+        }
+      }
+    ]
+  }
+}

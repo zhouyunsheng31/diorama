@@ -104,6 +104,15 @@ class DioramaHudScreen(ScreenNode):
             ui_base.set_visible(self, path, bool(visible))
         return True
 
+    def set_atlas_minimap_visible(self, visible):
+        """Hide our own tile-grid minimap when the engine draws the real one.
+
+        Two minimaps in the same corner would overlap, and the engine's is the
+        better of the two: it is live terrain rather than a pre-baked atlas.
+        The coordinate readout stays either way.
+        """
+        return ui_base.set_visible(self, "/minimap", bool(visible))
+
     # -- content -------------------------------------------------------
 
     def set_readout(self, coords=None, bearing=None, biome=None):

@@ -57,6 +57,12 @@ INHERIT_RE = re.compile(r'"([A-Za-z0-9_]+)@([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)"\s*:
 #: ``@namespace.control`` anywhere else in a value.
 REFERENCE_RE = re.compile(r'@([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)')
 
+#: UI libraries the engine itself ships. References into these are expected and
+#: must not be reported as unknown namespaces:
+#: * ``common``   - ``common.base_screen``, ``common.button``, ...
+#: * ``mini_map`` - ``mini_map.mini_map_wrapper``, the engine-rendered minimap.
+ENGINE_UI_NAMESPACES = frozenset(("common", "mini_map"))
+
 #: Control paths the Python screens ask for. Kept here (rather than scraped) so
 #: the check is explicit: if a path is renamed in the JSON, this list is the
 #: thing that says where the Python must be updated too.
@@ -415,8 +421,10 @@ def check_ui(report):
         for _control_name, namespace, control in INHERIT_RE.findall(raw):
             references.add((namespace, control))
         for namespace, control in references:
-            if namespace == "common":
-                # common.base_screen and friends are the engine's own namespace.
+            if namespace in ENGINE_UI_NAMESPACES:
+                # The engine's own UI libraries. ``common.base_screen`` is the
+                # base screen wrapper; ``mini_map.mini_map_wrapper`` is the
+                # engine-rendered minimap the mini_map screen inherits.
                 continue
             known = namespace_controls.get(namespace)
             if known is None:

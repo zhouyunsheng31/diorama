@@ -54,6 +54,7 @@ class DioramaClientSystem(ClientSystem):
         self._world_key = ""
         self._block_source = None
         self._hud_screen = None
+        self._minimap_screen = None
         self._map_screen = None
         self._waypoint_screen = None
         self._settings_screen = None
@@ -199,6 +200,11 @@ class DioramaClientSystem(ClientSystem):
         self._last_tick = now
         self._tick_count += 1
         self.hud.tick()
+        # Every 8th HUD tick (~2s) is enough for markers that only change when
+        # the player adds or removes a waypoint; the engine moves entity
+        # markers itself.
+        if self._tick_count % 8 == 0:
+            safe("minimap marker sync", self.sync_minimap_markers)
 
     def on_dimension_change(self, args=None):
         def run():
@@ -268,7 +274,46 @@ class DioramaClientSystem(ClientSystem):
             warn("CreateUI(hud) failed: %r", exc)
             return None
         self._hud_screen = self.hud.attach(screen)
+        self._create_minimap()
         return self._hud_screen
+
+    def _create_minimap(self):
+        """Create the engine-drawn minimap when this build supports it."""
+        try:
+            from dioramaScripts.modClient.ui import DioramaMiniMapScreen as minimap_ui
+        except Exception as exc:  # noqa: BLE001
+            warn("minimap module unavailable: %r", exc)
+            return None
+        if not minimap_ui.available():
+            info("engine minimap class not exposed; using the JSON atlas only")
+            return None
+        if minimap_ui.register() is None:
+            return None
+        try:
+            screen = clientApi.CreateUI(
+                modConfig.MOD_NAMESPACE,
+                modConfig.UI_MINIMAP,
+                {"isHud": 1, "mini_map_root_path": "/minimap_anchor/inheritor1"},
+            )
+        except Exception as exc:  # noqa: BLE001
+            warn("CreateUI(minimap) failed: %r", exc)
+            return None
+        self._minimap_screen = screen
+        # The engine minimap and our HUD tile grid share the same corner; keep
+        # only the engine one, since it draws live terrain.
+        safe("hide atlas minimap", self._hud_screen.set_atlas_minimap_visible, False)
+        return screen
+
+    def sync_minimap_markers(self):
+        """Push the current waypoint list into the engine minimap."""
+        screen = self._minimap_screen
+        if screen is None:
+            return 0
+        try:
+            return screen.sync_waypoints(self.waypoints.marker_waypoints())
+        except Exception as exc:  # noqa: BLE001
+            warn("minimap marker sync failed: %r", exc)
+            return 0
 
     def _push(self, ui_key, params=None):
         try:

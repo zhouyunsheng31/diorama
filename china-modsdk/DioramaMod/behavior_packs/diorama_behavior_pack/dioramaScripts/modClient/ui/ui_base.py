@@ -52,14 +52,21 @@ def screen_node_cls():
 def minimap_screen_cls():
     """``MiniMapBaseScreen`` when present, else ``ScreenNode``.
 
-    ``MiniMapBaseScreen`` is documented as an experimental China Edition class
-    that renders an actual minimap and accepts static/entity markers. When it is
-    missing the HUD screen still works - it just has no engine-drawn map, which
-    is what the "no mini map control" note in the README is about.
+    The official MCStudio sample ``GodChef/.../pop_minimapUI.py`` obtains the
+    class with ``clientApi.GetMiniMapScreenNodeCls()``, so that name is tried
+    first; the other spellings are kept as fallbacks for other builds. The class
+    renders a real, engine-drawn minimap of the surrounding terrain and accepts
+    static/entity markers; when it is missing the HUD screen still works - it
+    just has no engine-drawn map.
     """
     cls = _first_callable(
         clientApi,
-        ("GetMiniMapBaseScreenCls", "GetMiniMapScreenCls", "GetMiniMapCls"),
+        (
+            "GetMiniMapScreenNodeCls",
+            "GetMiniMapBaseScreenCls",
+            "GetMiniMapScreenCls",
+            "GetMiniMapCls",
+        ),
     )
     return cls if cls is not None else screen_node_cls()
 

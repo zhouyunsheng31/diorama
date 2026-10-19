@@ -33,6 +33,7 @@ UI_MAP = "diorama_map"
 UI_WAYPOINTS = "diorama_waypoints"
 UI_SETTINGS = "diorama_settings"
 UI_LABEL = "diorama_label"
+UI_MINIMAP = "diorama_minimap"
 
 #: ``RegisterUI(..., uiScreenDef)`` takes ``<namespace>.<ui file name>``; the
 #: JSON file, its ``"namespace"`` key and the Python file share the name.
@@ -41,6 +42,13 @@ UI_DEF_MAP = MOD_NAMESPACE + "." + UI_MAP
 UI_DEF_WAYPOINTS = MOD_NAMESPACE + "." + UI_WAYPOINTS
 UI_DEF_SETTINGS = MOD_NAMESPACE + "." + UI_SETTINGS
 UI_DEF_LABEL = MOD_NAMESPACE + "." + UI_LABEL
+UI_DEF_MINIMAP = MOD_NAMESPACE + "." + UI_MINIMAP
+
+#: Root control the engine's own minimap renderer is inserted at. The engine
+#: draws live terrain block colours there; we only add markers on top. See
+#: ``mini_map.mini_map_wrapper`` in the official UI library and the official
+#: ``pop_minimapUI`` sample shipped with MCStudio.
+MINIMAP_ROOT_PATH = "/minimap_root"
 
 #: Path prefix a screen needs when it inherits ``common.base_screen`` and
 #: therefore the safe-zone wrapper. See docs/API_ASSUMPTIONS.md.
