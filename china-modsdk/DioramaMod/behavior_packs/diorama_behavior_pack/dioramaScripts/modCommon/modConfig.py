@@ -45,10 +45,17 @@ UI_DEF_LABEL = MOD_NAMESPACE + "." + UI_LABEL
 UI_DEF_MINIMAP = MOD_NAMESPACE + "." + UI_MINIMAP
 
 #: Root control the engine's own minimap renderer is inserted at. The engine
-#: draws live terrain block colours there; we only add markers on top. See
-#: ``mini_map.mini_map_wrapper`` in the official UI library and the official
-#: ``pop_minimapUI`` sample shipped with MCStudio.
-MINIMAP_ROOT_PATH = "/minimap_root"
+#: draws live terrain block colours there; we only add markers on top. The JSON
+#: file `diorama_minimap.json` puts `mini_map.mini_map_wrapper` at this path and
+#: `CreateUI(..., {"mini_map_root_path": MINIMAP_CONTROL_PATH})` tells the
+#: engine where to find it. Verified against the official MCStudio sample
+#: `demo/GodChef/.../ui/clickbuttonUI.json`, which does the same with
+#: `mini_map_root_path: "/inheritor0"`.
+MINIMAP_CONTROL_PATH = "/minimap_anchor/inheritor1"
+
+#: The same control, relative to the screen's ``CONTENT_ROOT``, for the
+#: ``GetBaseUIControl`` calls made by the minimap screen.
+MINIMAP_CONTROL_SUFFIX = "/minimap_anchor/inheritor1"
 
 #: Path prefix a screen needs when it inherits ``common.base_screen`` and
 #: therefore the safe-zone wrapper. See docs/API_ASSUMPTIONS.md.

@@ -74,6 +74,7 @@ class FakeMiniMapControl(object):
         self.repaints = 0
         self.zooms = []
         self.zoom_value = None
+        self.highest_y = None
 
     def AddStaticMarker(self, *args):
         if "AddStaticMarker" not in self.support:
@@ -84,15 +85,11 @@ class FakeMiniMapControl(object):
     def RemoveStaticMarker(self, *args):
         if "RemoveStaticMarker" not in self.support:
             raise AttributeError("RemoveStaticMarker")
-        marker = args[0] if args else None
-        if marker in self.static_markers:
-            self.static_markers.remove(marker)
-            return True
-        # Tolerate the index form the production code may pass.
-        index = int(marker) - 1 if isinstance(marker, int) else -1
-        if 0 <= index < len(self.static_markers):
-            self.static_markers.pop(index)
-            return True
+        key = args[0] if args else None
+        for index, marker in enumerate(self.static_markers):
+            if marker[0] == key:
+                self.static_markers.pop(index)
+                return True
         return False
 
     def AddEntityMarker(self, *args):
@@ -116,8 +113,12 @@ class FakeMiniMapControl(object):
         self.zooms.append(-1)
         return True
 
-    def SetZoom(self, value):
-        self.zoom_value = value
+    def ZoomReset(self):
+        self.zooms.append(0)
+        return True
+
+    def SetHighestY(self, value):
+        self.highest_y = value
         return True
 
 

@@ -375,10 +375,23 @@ class DioramaClientSystem(ClientSystem):
             self.hud.notice("\u5df2\u5207\u56de\u8d34\u56fe\u5730\u56fe")
             return True
         half = 16
-        self.map.request_geometry(
-            (pos[0] - half, pos[1] - 8, pos[2] - half),
-            (pos[0] + half, pos[1] + 8, pos[2] + half),
-        )
+        start = (pos[0] - half, pos[1] - 8, pos[2] - half)
+        end = (pos[0] + half, pos[1] + 8, pos[2] + half)
+        # The palette can be read on the client, so try that first: it avoids a
+        # round trip and the server-side size limit. Only if the client-side
+        # form is missing do we ask the server.
+        palette = None
+        try:
+            palette = self.world_diorama.local_palette(start, end)
+        except Exception as exc:  # noqa: BLE001
+            warn("client palette failed: %r", exc)
+        if palette is not None and screen.render_geometry(
+            self.world_diorama, palette
+        ):
+            self._geometry_on = True
+            self.hud.notice("\u5df2\u5207\u6362\u5230 3D \u7acb\u4f53\u5730\u56fe")
+            return True
+        self.map.request_geometry(start, end)
         self._geometry_on = True
         self.hud.notice("\u6b63\u5728\u751f\u6210 3D \u7acb\u4f53\u5730\u56fe\u2026")
         return True

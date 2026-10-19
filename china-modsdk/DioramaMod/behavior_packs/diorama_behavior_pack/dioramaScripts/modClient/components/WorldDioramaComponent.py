@@ -84,14 +84,49 @@ class WorldDioramaComponent(object):
         except Exception:
             return -1
 
-    def render_block_geometry(self, screen, control_path, palette, geometry_name="diorama_map"):
+    def local_palette(self, start, end, eliminate_air=True):
+        """Read a block palette on the client, with no server round-trip.
+
+        The official docs give ``GetBlockPaletteBetweenPos`` a client form that
+        takes ``(start, end, eliminateAir)`` without a dimension id; the server
+        form takes the dimension first. ``CreateBlock`` itself is available on
+        both sides, so the HUD 3D card can be fed entirely on the client.
+        """
+        try:
+            block = self._factory_component("CreateBlock")
+            if block is None:
+                return None
+            start = tuple(int(v) for v in start)
+            end = tuple(int(v) for v in end)
+            try:
+                return block.GetBlockPaletteBetweenPos(start, end, bool(eliminate_air))
+            except TypeError:
+                return block.GetBlockPaletteBetweenPos(start, end)
+        except Exception:
+            return None
+
+    def render_block_geometry(
+        self,
+        screen,
+        control_path,
+        palette,
+        geometry_name="diorama_map",
+        scale=1.0,
+        rotations=(0, 45, 0),
+    ):
         """Render a palette inside a PaperDoll control when supported.
 
         ``palette`` may be either a live BlockPalette object or the plain dict
         that ``SerializeBlockPalette`` produced on the server; the dict is
         deserialized here because the serialized form is what crosses the
-        client/server event boundary. ``geometry_name`` is reused on purpose:
-        the docs say reusing a name for an identical model saves model memory.
+        client/server event boundary.
+
+        ``geometry_name`` is reused on purpose: the docs say reusing a name for
+        an identical model saves model memory, and the combination result is
+        overwritten rather than appended. The parameter the engine reads is
+        ``block_geometry_model_name`` - ``RenderBlockGeometryModel`` ignores a
+        dict keyed any other way.
+
         The JSON atlas screen remains the fallback.
         """
         if screen is None or palette is None:
@@ -109,8 +144,18 @@ class WorldDioramaComponent(object):
             if not geometry:
                 return False
             control = screen.GetBaseUIControl(control_path)
+            if control is None:
+                return False
             doll = control.asNeteasePaperDoll()
-            doll.RenderBlockGeometryModel({"geometry_name": geometry})
+            params = {
+                "block_geometry_model_name": geometry,
+                "scale": float(scale),
+            }
+            try:
+                params["init_rot_x"], params["init_rot_y"], params["init_rot_z"] = rotations
+            except (TypeError, ValueError):
+                pass
+            doll.RenderBlockGeometryModel(params)
             self.geometry_names[geometry_name] = geometry
             return True
         except Exception:

@@ -145,10 +145,11 @@ class MiniMapOptionalMethodTest(unittest.TestCase):
         self.assertTrue(self.screen.refresh())
         self.assertTrue(self.screen.zoom(1))
         self.assertTrue(self.screen.zoom(-1))
-        self.assertTrue(self.screen.set_zoom(2.5))
+        self.assertTrue(self.screen.zoom_reset())
+        self.assertTrue(self.screen.set_highest_y(-1))
         self.assertEqual(self.minimap.repaints, 1)
-        self.assertEqual(self.minimap.zooms, [1, -1])
-        self.assertEqual(self.minimap.zoom_value, 2.5)
+        self.assertEqual(self.minimap.zooms, [1, -1, 0])
+        self.assertEqual(self.minimap.highest_y, -1)
 
     def test_missing_optional_methods_report_failure(self):
         self.minimap.support.clear()
@@ -157,7 +158,8 @@ class MiniMapOptionalMethodTest(unittest.TestCase):
         self.screen.controls.clear()
         self.assertFalse(self.screen.refresh())
         self.assertFalse(self.screen.zoom(1))
-        self.assertFalse(self.screen.set_zoom(1.0))
+        self.assertFalse(self.screen.zoom_reset())
+        self.assertFalse(self.screen.set_highest_y(0))
 
 
 if __name__ == "__main__":
