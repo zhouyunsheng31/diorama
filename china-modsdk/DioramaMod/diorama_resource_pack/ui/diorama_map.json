@@ -42,6 +42,13 @@
                 "visible": false
               }
             },
+            { "geometry_diorama": {
+                "type": "custom",
+                "renderer": "netease_paper_doll_renderer",
+                "size": ["100%", "100%"],
+                "layer": 1,
+                "visible": false
+            }},
             { "markers": {
                 "type": "panel",
                 "size": ["100%", "100%"],

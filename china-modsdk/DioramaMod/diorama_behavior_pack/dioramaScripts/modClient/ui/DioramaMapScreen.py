@@ -109,6 +109,20 @@ class DioramaMapScreen(ScreenNode):
     def set_grid_visible(self, visible):
         return ui_base.set_visible(self, "/map_panel/grid", bool(visible))
 
+    def set_geometry_visible(self, visible):
+        """Show the official PaperDoll block-geometry layer."""
+        return ui_base.set_visible(self, "/map_panel/geometry_diorama", bool(visible))
+
+    def render_geometry(self, world_diorama, palette, geometry_name="diorama_map"):
+        """Render a serialized BlockPalette in the PaperDoll layer."""
+        ok = world_diorama.render_block_geometry(
+            self, "/map_panel/geometry_diorama", palette, geometry_name
+        )
+        if ok:
+            self.set_atlas_visible(False)
+            self.set_geometry_visible(True)
+        return ok
+
     # -- markers -------------------------------------------------------
 
     def render_markers(self, markers):

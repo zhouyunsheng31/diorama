@@ -9,11 +9,15 @@ China Edition UI documentation recommends (JSON for layout, Python for state).
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import client.extraClientApi as clientApi
+
 from dioramaScripts.modCommon import modConfig
 from dioramaScripts.modCommon.log import warn
 from dioramaScripts.modClient.ui import ui_base
 
 ScreenNode = ui_base.screen_node_cls()
+ViewBinder = clientApi.GetViewBinderCls()
+ViewRequest = clientApi.GetViewViewRequestCls()
 
 #: Content root declared in diorama_hud.json's $screen_content.
 CONTENT_ROOT = "/hud_root"
@@ -39,6 +43,19 @@ class DioramaHudScreen(ScreenNode):
         ScreenNode.__init__(self, namespace, name, param)
         self._params = param or {}
         self._layout_applied = False
+        self._bound_text = {"coord": "", "bearing": "", "biome": ""}
+
+    @ViewBinder.binding(ViewBinder.BF_BindString, "#diorama_coord_text")
+    def bind_coord_text(self):
+        return self._bound_text.get("coord", "")
+
+    @ViewBinder.binding(ViewBinder.BF_BindString, "#diorama_bearing_text")
+    def bind_bearing_text(self):
+        return self._bound_text.get("bearing", "")
+
+    @ViewBinder.binding(ViewBinder.BF_BindString, "#diorama_biome_text")
+    def bind_biome_text(self):
+        return self._bound_text.get("biome", "")
 
     # -- lifecycle -----------------------------------------------------
 
@@ -92,10 +109,13 @@ class DioramaHudScreen(ScreenNode):
     def set_readout(self, coords=None, bearing=None, biome=None):
         settings = getattr(self, "_settings", None)
         if coords is not None and (settings is None or getattr(settings, "coordinates", True)):
+            self._bound_text["coord"] = coords
             ui_base.set_text(self, "/coord_label", coords)
         if bearing is not None and (settings is None or getattr(settings, "compass", True)):
+            self._bound_text["bearing"] = bearing
             ui_base.set_text(self, "/bearing_label", bearing)
         if biome is not None and (settings is None or getattr(settings, "biome", True)):
+            self._bound_text["biome"] = biome
             ui_base.set_text(self, "/biome_label", biome)
 
     def remember_settings(self, settings):
