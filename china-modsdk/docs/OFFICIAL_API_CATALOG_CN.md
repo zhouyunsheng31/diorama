@@ -63,8 +63,9 @@
 
 | 官方能力 | 工程位置 | 当前状态 |
 |---|---|---|
-| 投影/DDA/光照/LOD/MipMap | `DioramaMod/.../modCore/` | 已有，350 项离线测试 |
-| HUD 地图格 | `resource_packs/diorama_resource_pack/ui/diorama_hud.json` | `stack_grid` + 官方 `ViewBinder` 绑定坐标/方位/群系 |
+| 投影/DDA/光照/LOD/MipMap | `DioramaMod/.../modCore/` | 已有，363 项离线测试 |
+| HUD 实时小地图 | `ui/diorama_minimap.json` + `modClient/ui/DioramaMiniMapScreen.py` | **引擎绘制的真实地形小地图**：`GetMiniMapScreenNodeCls()` + `mini_map.mini_map_wrapper`，模组只叠加路径点/实体标记 |
+| HUD 地图格（回退） | `ui/diorama_hud.json` | `stack_grid` + `ViewBinder`；引擎小地图可用时自动隐藏，避免两块地图重叠 |
 | HUD 文字绑定 | `modClient/ui/DioramaHudScreen.py` | `BF_BindString` 装饰器，控件缺失时仍走 `SetText` 回退 |
 | 服务端方块采样 | `modServer/engine/block_source.py` | 已有适配边界 |
 | 全屏块几何 | `modServer/components/MapServerComponent.py` + `modClient/components/WorldDioramaComponent.py` | `GetBlockPaletteBetweenPos` → `SerializeBlockPalette` → 事件 → `DeserializeBlockPalette` → `CombineBlockPaletteToGeometry` → PaperDoll |
@@ -72,6 +73,22 @@
 | VirtualWorld 全屏地图 | `modClient/components/WorldDioramaComponent.py` | 单例虚拟世界、相机、原版模型与包围盒适配 |
 | DrawingComp 雷达/路径点 | 部分组件已有 | 需真实客户端验证 |
 | ShaderSDK | 未接入 | 需 PC/Java 版目标；手机默认 OpenGL，不作为移动端方案 |
+
+### HUD 小地图的数据流
+
+引擎自带一个小地图渲染器，这是官方 API 里唯一能把**实时地形**画进 HUD 的通道：
+
+```
+客户端启动 → _create_minimap()
+  → ui_base.minimap_screen_cls()           （GetMiniMapScreenNodeCls → 回退 ScreenNode）
+  → RegisterUI(diorama, diorama_minimap, ...)
+  → CreateUI(..., {"isHud": 1, "mini_map_root_path": "/minimap_anchor/inheritor1"})
+  → 引擎在 mini_map.mini_map_wrapper 里绘制地形
+  → 模组每 ~2 秒 sync_waypoints()：AddStaticMarker / RemoveStaticMarker
+  → 同时隐藏自己的 atlas 小地图面板
+```
+
+若该构建没有暴露小地图类，`available()` 返回 `False`，模组保持 atlas 小地图，不报错。
 
 ### 全屏 3D 地图的数据流
 
